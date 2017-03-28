@@ -14,7 +14,7 @@ namespace Test3D
         [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
+            using (var game = new Test3DDemo())
                 game.Run();
         }
     }
