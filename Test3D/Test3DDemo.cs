@@ -9,22 +9,17 @@ namespace Test3D
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        //Camera
-        Vector3 camTarget;
-        Vector3 camPosition;
-        Matrix projectionMatrix;
-        Matrix viewMatrix;
-        Matrix worldMatrix;
-
         //BasicEffect for rendering
-        BasicEffect basicEffect;
+        BasicEffect effect;
 
         //Geometric info
-        VertexPositionColor[] triangleVertices;
-        VertexBuffer vertexBuffer;
+        VertexPositionTexture[] floorVerts;
 
-        //Orbit
-        bool orbit = false;
+        Model tank;
+        Texture2D checkerboardTexture;
+
+        //Camera
+        Vector3 cameraPosition = new Vector3(15, 10, 10);
 
         public Test3DDemo()
         {
@@ -36,40 +31,36 @@ namespace Test3D
         {
             base.Initialize();
 
-            //Setup Camera
-            camTarget = new Vector3(0f, 0f, 0f);
-            camPosition = new Vector3(0f, 0f, -100f);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(
-                               MathHelper.ToRadians(45f),
-                               GraphicsDevice.DisplayMode.AspectRatio,1f, 1000f);
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f)); // Y up
-            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.Forward, Vector3.Up);
+            floorVerts = new VertexPositionTexture[6];
+
+            floorVerts[0].Position = new Vector3(-20, -20, 0);
+            floorVerts[1].Position = new Vector3(-20, 20, 0);
+            floorVerts[2].Position = new Vector3(20, -20, 0);
+
+            floorVerts[3].Position = floorVerts[1].Position;
+            floorVerts[4].Position = new Vector3(20, 20, 0);
+            floorVerts[5].Position = floorVerts[2].Position;
+
+            int repetitions = 20;
+
+            floorVerts[0].TextureCoordinate = new Vector2(0, 0);
+            floorVerts[1].TextureCoordinate = new Vector2(0, repetitions);
+            floorVerts[2].TextureCoordinate = new Vector2(repetitions, 0);
+
+            floorVerts[3].TextureCoordinate = floorVerts[1].TextureCoordinate;
+            floorVerts[4].TextureCoordinate = new Vector2(repetitions, repetitions);
+            floorVerts[5].TextureCoordinate = floorVerts[2].TextureCoordinate;
 
             //BasicEffect
-            basicEffect = new BasicEffect(GraphicsDevice);
-            basicEffect.Alpha = 1f;
-
-            // Want to see the colors of the vertices, this needs to be on
-            basicEffect.VertexColorEnabled = true;
-
-            //Lighting requires normal information which VertexPositionColor does not have
-            //If you want to use lighting and VPC you need to create a custom def
-            basicEffect.LightingEnabled = false;
-
-            //Geometry  - a simple triangle about the origin
-            triangleVertices = new VertexPositionColor[3];
-            triangleVertices[0] = new VertexPositionColor(new Vector3(0, 20, 0), Color.Red);
-            triangleVertices[1] = new VertexPositionColor(new Vector3(-20, -20, 0), Color.Green);
-            triangleVertices[2] = new VertexPositionColor(new Vector3(20, -20, 0), Color.Blue);
-
-            //Vert buffer
-            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
-            vertexBuffer.SetData<VertexPositionColor>(triangleVertices);
+            effect = new BasicEffect(GraphicsDevice);
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            tank = Content.Load<Model>("Models/Tank_Light");
+            checkerboardTexture = Content.Load<Texture2D>("Textures/checkerboard");
         }
 
         protected override void UnloadContent()
@@ -80,77 +71,82 @@ namespace Test3D
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                camPosition.X -= 1f;
-                camTarget.X -= 1f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                camPosition.X += 1f;
-                camTarget.X += 1f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
-                camPosition.Y -= 1f;
-                camTarget.Y -= 1f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                camPosition.Y += 1f;
-                camTarget.Y += 1f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus))
-            {
-                camPosition.Z += 1f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
-            {
-                camPosition.Z -= 1f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                orbit = !orbit;
-            }
-
-            if (orbit)
-            {
-                Matrix rotationMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(1f));
-                camPosition = Vector3.Transform(camPosition, rotationMatrix);
-            }
-
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
-
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            basicEffect.Projection = projectionMatrix;
-            basicEffect.View = viewMatrix;
-            basicEffect.World = worldMatrix;
-
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            GraphicsDevice.SetVertexBuffer(vertexBuffer);
 
-            //Turn off culling so we see both sides of our rendered triangle
-            RasterizerState rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
-            GraphicsDevice.RasterizerState = rasterizerState;
+            DrawGround();
 
-            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 3);
-            }
+            DrawModel(new Vector3(0, 0, 0));
 
             base.Draw(gameTime);
+        }
+
+        protected void DrawGround()
+        {
+            // The assignment of effect.View and effect.Projection
+            // are nearly identical to the code in the Model drawing code.
+            var cameraLookAtVector = Vector3.Zero;
+            var cameraUpVector = Vector3.UnitZ;
+
+            effect.View = Matrix.CreateLookAt(cameraPosition, cameraLookAtVector, cameraUpVector);
+
+            float aspectRatio = graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
+            float fieldOfView = Microsoft.Xna.Framework.MathHelper.PiOver4;
+            float nearClipPlane = 1;
+            float farClipPlane = 200;
+
+            effect.Projection = Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+
+            effect.TextureEnabled = true;
+            effect.Texture = checkerboardTexture;
+
+            foreach (var pass in effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                graphics.GraphicsDevice.DrawUserPrimitives(
+                    // We’ll be rendering two triangles
+                    PrimitiveType.TriangleList,
+                    // The array of verts that we want to render
+                    floorVerts,
+                    // The offset, which is 0 since we want to start 
+                    // at the beginning of the floorVerts array
+                    0,
+                    // The number of triangles to draw
+                    2);
+            }
+        }
+
+        protected void DrawModel(Vector3 modelPosition)
+        {
+            foreach (var mesh in tank.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+                    effect.World = Matrix.CreateTranslation(modelPosition);
+
+                    var cameraLookAtVector = Vector3.Zero;
+                    var cameraUpVector = Vector3.UnitZ;
+
+                    effect.View = Matrix.CreateLookAt(cameraPosition, cameraLookAtVector, cameraUpVector);
+
+                    float aspectRatio = graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
+                    float fieldOfView = Microsoft.Xna.Framework.MathHelper.PiOver4;
+                    float nearClipPlane = 1;
+                    float farClipPlane = 200;
+
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+                }
+                // Now that we've assigned our properties on the effects we can
+                // draw the entire mesh
+                mesh.Draw();
+            }
         }
     }
 }
