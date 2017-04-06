@@ -44,7 +44,7 @@
 /processorParam:TextureFormat=Color
 /build:Textures/checkerboard.png
 
-#begin Models/Tank_Light.png
+#begin Models/Tank_Light_pal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -54,5 +54,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Models/Tank_Light.png
+/build:Models/Tank_Light_pal.png
 
