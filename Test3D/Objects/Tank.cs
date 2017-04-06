@@ -20,7 +20,7 @@ namespace Test3D.Objects
             model = contentManager.Load<Model>(modelName);
         }
 
-        public void Draw(Vector3 cameraPosition, float aspectRatio)
+        public void Draw(Camera camera)
         {
             foreach (var mesh in model.Meshes)
             {
@@ -30,17 +30,8 @@ namespace Test3D.Objects
                     effect.PreferPerPixelLighting = true;
 
                     effect.World = GetWorldMatrix();
-
-                    var cameraLookAtVector = Vector3.Zero;
-                    var cameraUpVector = Vector3.UnitZ;
-
-                    effect.View = Matrix.CreateLookAt(cameraPosition, cameraLookAtVector, cameraUpVector);
-
-                    float fieldOfView = Microsoft.Xna.Framework.MathHelper.PiOver4;
-                    float nearClipPlane = 1;
-                    float farClipPlane = 200;
-
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+                    effect.View = camera.ViewMatrix;
+                    effect.Projection = camera.ProjectionMatrix;
                 }
 
                 // Now that we've assigned our properties on the effects we can

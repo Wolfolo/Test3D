@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Objects\Camera.cs" />
     <Compile Include="Objects\Floor.cs" />
     <Compile Include="Objects\Tank.cs" />
     <Compile Include="Program.cs" />

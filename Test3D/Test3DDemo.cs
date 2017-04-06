@@ -12,9 +12,7 @@ namespace Test3D
 
         Floor floor;
         Tank tank;
-
-        //Camera
-        Vector3 cameraPosition = new Vector3(15, 10, 10);
+        Camera camera;
 
         public Test3DDemo()
         {
@@ -31,6 +29,8 @@ namespace Test3D
 
             tank = new Tank();
             tank.Initialize(Content, "Models/Tank_Light");
+
+            camera = new Camera(GraphicsDevice);
         }
 
         protected override void LoadContent()
@@ -55,8 +55,8 @@ namespace Test3D
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             float aspectRatio = graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
-            floor.Draw(cameraPosition, aspectRatio);
-            tank.Draw(cameraPosition, aspectRatio);
+            floor.Draw(camera);
+            tank.Draw(camera);
 
             base.Draw(gameTime);
         }

@@ -44,20 +44,15 @@ namespace Test3D.Objects
             texture = contentManager.Load<Texture2D>(textureName);
         }
 
-        public void Draw(Vector3 cameraPosition, float aspectRatio)
+        public void Draw(Camera camera)
         {
             // The assignment of effect.View and effect.Projection
             // are nearly identical to the code in the Model drawing code.
             var cameraLookAtVector = Vector3.Zero;
             var cameraUpVector = Vector3.UnitZ;
 
-            effect.View = Matrix.CreateLookAt(cameraPosition, cameraLookAtVector, cameraUpVector);
-
-            float fieldOfView = Microsoft.Xna.Framework.MathHelper.PiOver4;
-            float nearClipPlane = 1;
-            float farClipPlane = 200;
-
-            effect.Projection = Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+            effect.View = camera.ViewMatrix;
+            effect.Projection = camera.ProjectionMatrix;
 
             effect.TextureEnabled = true;
             effect.Texture = texture;
