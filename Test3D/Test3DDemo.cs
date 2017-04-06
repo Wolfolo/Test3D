@@ -47,6 +47,7 @@ namespace Test3D
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
             tank.Update(gameTime);
+            camera.Update(gameTime);
             base.Update(gameTime);
         }
 
