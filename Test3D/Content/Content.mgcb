@@ -44,7 +44,45 @@
 /processorParam:TextureFormat=Color
 /build:Textures/checkerboard.png
 
-#begin Models/Tank_Light_pal.png
+#begin Models/Tank_Dual.obj
+/importer:OpenAssetImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=90
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.25
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Color
+/build:Models/Tank_Dual.obj
+
+#begin Models/Tank_Medium.obj
+/importer:OpenAssetImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=90
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.25
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Color
+/build:Models/Tank_Medium.obj
+
+#begin Models/Tank_pal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -54,5 +92,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Models/Tank_Light_pal.png
+/build:Models/Tank_pal.png
 
