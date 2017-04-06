@@ -16,10 +16,14 @@ namespace Test3D.Objects
         BasicEffect effect;
         GraphicsDevice graphicsDevice;
 
-        public void Initialize(GraphicsDevice device, ContentManager contentManager, string textureName)
+        public Floor(GraphicsDevice device)
         {
             graphicsDevice = device;
-            effect = new BasicEffect(device);
+        }
+
+        public void Initialize(ContentManager contentManager, string textureName)
+        {
+            effect = new BasicEffect(graphicsDevice);
 
             floorVerts = new VertexPositionTexture[6];
 
