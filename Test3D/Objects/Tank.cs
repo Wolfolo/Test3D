@@ -13,6 +13,8 @@ namespace Test3D.Objects
     {
         Model model;
 
+        float angle;
+
         public void Initialize(ContentManager contentManager, string modelName)
         {
             model = contentManager.Load<Model>(modelName);
@@ -26,7 +28,8 @@ namespace Test3D.Objects
                 {
                     effect.EnableDefaultLighting();
                     effect.PreferPerPixelLighting = true;
-                    effect.World = Matrix.Identity;
+
+                    effect.World = GetWorldMatrix();
 
                     var cameraLookAtVector = Vector3.Zero;
                     var cameraUpVector = Vector3.UnitZ;
@@ -44,6 +47,29 @@ namespace Test3D.Objects
                 // draw the entire mesh
                 mesh.Draw();
             }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // TotalSeconds is a double so we need to cast to float
+            angle += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        Matrix GetWorldMatrix()
+        {
+            const float circleRadius = 8;
+            const float heightOffGround = 3;
+
+            // this matrix moves the model "out" from the origin
+            Matrix translationMatrix = Matrix.CreateTranslation(circleRadius, 0, heightOffGround);
+
+            // this matrix rotates everything around the origin
+            Matrix rotationMatrix = Matrix.CreateRotationZ(angle);
+
+            // We combine the two to have the model move in a circle:
+            Matrix combined = translationMatrix * rotationMatrix;
+
+            return combined;
         }
     }
 }
