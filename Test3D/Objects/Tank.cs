@@ -14,10 +14,12 @@ namespace Test3D.Objects
         Model model;
 
         float angle;
+        Vector3 position;
 
-        public void Initialize(ContentManager contentManager, string modelName)
+        public void Initialize(ContentManager contentManager, string modelName, Vector3 startPos)
         {
             model = contentManager.Load<Model>(modelName);
+            position = startPos;
         }
 
         public void Draw(Camera camera)
@@ -48,17 +50,14 @@ namespace Test3D.Objects
 
         Matrix GetWorldMatrix()
         {
-            const float circleRadius = 8;
-            const float heightOffGround = 3;
-
             // this matrix moves the model "out" from the origin
-            Matrix translationMatrix = Matrix.CreateTranslation(circleRadius, 0, heightOffGround);
+            Matrix positionMatrix = Matrix.CreateTranslation(position);
 
             // this matrix rotates everything around the origin
             Matrix rotationMatrix = Matrix.CreateRotationZ(angle);
 
             // We combine the two to have the model move in a circle:
-            Matrix combined = translationMatrix * rotationMatrix;
+            Matrix combined = rotationMatrix * positionMatrix;
 
             return combined;
         }

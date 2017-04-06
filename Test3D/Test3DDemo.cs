@@ -11,7 +11,9 @@ namespace Test3D
         SpriteBatch spriteBatch;
 
         Floor floor;
-        Tank tank;
+        Tank tank_light;
+        Tank tank_medium;
+        Tank tank_dual;
         Camera camera;
 
         public Test3DDemo()
@@ -27,8 +29,14 @@ namespace Test3D
             floor = new Floor(GraphicsDevice);
             floor.Initialize(Content, "Textures/checkerboard");
 
-            tank = new Tank();
-            tank.Initialize(Content, "Models/Tank_Light");
+            tank_light = new Tank();
+            tank_light.Initialize(Content, "Models/Tank_Light", new Vector3(10, 0, 0));
+
+            tank_medium = new Tank();
+            tank_medium.Initialize(Content, "Models/Tank_Medium", new Vector3(0, 0, 0));
+
+            tank_dual = new Tank();
+            tank_dual.Initialize(Content, "Models/Tank_Dual", new Vector3(-10, 0, 0));
 
             camera = new Camera(GraphicsDevice);
         }
@@ -46,7 +54,9 @@ namespace Test3D
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            tank.Update(gameTime);
+            tank_light.Update(gameTime);
+            tank_medium.Update(gameTime);
+            tank_dual.Update(gameTime);
             camera.Update(gameTime);
             base.Update(gameTime);
         }
@@ -57,7 +67,10 @@ namespace Test3D
 
             float aspectRatio = graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
             floor.Draw(camera);
-            tank.Draw(camera);
+
+            tank_light.Draw(camera);
+            tank_medium.Draw(camera);
+            tank_dual.Draw(camera);
 
             base.Draw(gameTime);
         }
