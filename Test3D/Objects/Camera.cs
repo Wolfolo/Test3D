@@ -66,11 +66,25 @@ namespace Test3D.Objects
                 angle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
 
-            //Movement
-            var forwardVector = new Vector3(0, -1, 0);
+            // Movement
             var rotationMatrix = Matrix.CreateRotationZ(angle);
             const float unitsPerSecond = 10;
 
+            // Strafe
+            var strafeVector = new Vector3(1, 0, 0);
+            strafeVector = Vector3.Transform(strafeVector, rotationMatrix);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad4))
+            {
+                position += strafeVector * unitsPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.NumPad6))
+            {
+                position -= strafeVector * unitsPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
+            // Throttle
+            var forwardVector = new Vector3(0, -1, 0);
             forwardVector = Vector3.Transform(forwardVector, rotationMatrix);
 
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad8))
