@@ -57,11 +57,11 @@ namespace Test3D.Objects
         public void Update(GameTime gameTime)
         {
             // Rotation
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad7))
             {
                 angle += (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            else if (Keyboard.GetState().IsKeyDown(Keys.NumPad9))
             {
                 angle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
@@ -73,11 +73,11 @@ namespace Test3D.Objects
 
             forwardVector = Vector3.Transform(forwardVector, rotationMatrix);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad8))
             {
                 position += forwardVector * unitsPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            else if (Keyboard.GetState().IsKeyDown(Keys.NumPad2))
             {
                 position -= forwardVector * unitsPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
