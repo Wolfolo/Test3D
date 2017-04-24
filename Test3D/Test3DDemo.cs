@@ -39,6 +39,8 @@ namespace Test3D
             tank_dual.Initialize(Content, "Models/Tank_Dual", new Vector3(-10, 0, 0));
 
             camera = new Camera(GraphicsDevice);
+            camera.SetPosition(new Vector3(0, -20, 10));
+            camera.SetRotation(Matrix.CreateFromYawPitchRoll(0, 1, 0));
         }
 
         protected override void LoadContent()
