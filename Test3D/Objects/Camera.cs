@@ -8,12 +8,18 @@ namespace Test3D.Objects
     {
         // We need this to calculate the aspectRatio in the ProjectionMatrix property.
         GraphicsDevice graphicsDevice;
+        Point center;
 
         Vector3 position;
         Vector3 up;
         Vector3 look;
 
+        MouseState oldMouseState;
+
         const float unitsPerSecond = 10;
+
+        int sensitivity = 5;
+        bool invertMouse = true;
 
         public enum CameraRotations
         {
@@ -63,6 +69,8 @@ namespace Test3D.Objects
         public Camera(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
+
+            center = new Point(graphicsDevice.Viewport.Width / 2, graphicsDevice.Viewport.Height / 2);
         }
 
         public void SetPosition(Vector3 pos)
@@ -192,33 +200,60 @@ namespace Test3D.Objects
         {
             float unit = .01f;
 
-            // Rotation
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad4))
+            // Mouse look
+            if (Mouse.GetState().RightButton == ButtonState.Released)
             {
-                Rotate(CameraRotations.YawRight, unit);
+                if (Mouse.GetState().Position.X > center.X)
+                {
+                    Rotate(invertMouse ? CameraRotations.YawLeft : CameraRotations.YawRight, (float)sensitivity / 200);
+                }
+                else if (Mouse.GetState().Position.X < center.X)
+                {
+                    Rotate(invertMouse ? CameraRotations.YawRight : CameraRotations.YawLeft, (float)sensitivity / 200);
+                }
+
+                if (Mouse.GetState().Position.Y > center.Y)
+                {
+                    Rotate(invertMouse ? CameraRotations.PitchDown : CameraRotations.PitchUp, (float)sensitivity / 200);
+                }
+                else if (Mouse.GetState().Position.Y < center.Y)
+                {
+                    Rotate(invertMouse ? CameraRotations.PitchUp : CameraRotations.PitchDown, (float)sensitivity / 200);
+                }
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.NumPad6))
+            else
             {
-                Rotate(CameraRotations.YawLeft, unit);
+                if (Mouse.GetState().Position.X > center.X)
+                {
+                    Rotate(invertMouse ? CameraRotations.RollAntiClockwise : CameraRotations.RollClockwise, (float)sensitivity / 200);
+                }
+                else if (Mouse.GetState().Position.X < center.X)
+                {
+                    Rotate(invertMouse ? CameraRotations.RollClockwise : CameraRotations.RollAntiClockwise, (float)sensitivity / 200);
+                }
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad2))
+            // Keep the mouse in the center or the camera will move continuously
+            Mouse.SetPosition(center.X, center.Y);
+
+            // Invert the movement direction?
+            if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
             {
-                Rotate(CameraRotations.PitchDown, unit);
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.NumPad8))
-            {
-                Rotate(CameraRotations.PitchUp, unit);
+                invertMouse = !invertMouse;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad1))
+            // Sensitivitsy
+            if (Mouse.GetState().ScrollWheelValue < oldMouseState.ScrollWheelValue)
             {
-                Rotate(CameraRotations.RollAntiClockwise, unit);
+                sensitivity += sensitivity > 1 ? -1 : 0;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.NumPad3))
+            else if (Mouse.GetState().ScrollWheelValue > oldMouseState.ScrollWheelValue)
             {
-                Rotate(CameraRotations.RollClockwise, unit);
+                sensitivity += sensitivity < 10 ? 1 : 0;
             }
+
+            // Update the mouse state
+            oldMouseState = Mouse.GetState();
 
             // Movement
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
