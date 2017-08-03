@@ -76,6 +76,8 @@ namespace Test3D
             tank_medium.Draw(camera);
             tank_dual.Draw(camera);
 
+            camera.Draw();
+
             base.Draw(gameTime);
         }
     }

@@ -7,7 +7,7 @@ namespace Test3D.Objects
     public abstract class BaseCamera
     {
         // We need this to calculate the aspectRatio in the ProjectionMatrix property.
-        GraphicsDevice graphicsDevice;
+        protected GraphicsDevice graphicsDevice;
         Point center;
 
         protected Vector3 position;
@@ -260,6 +260,40 @@ namespace Test3D.Objects
             {
                 Move(CameraMovements.StrafeDown, unit);
             }
+        }
+
+        public void Draw()
+        {
+#if DEBUG
+            /*
+             * Draw 3D Helper Axes on the world origin
+             * X is red
+             * Y is green
+             * Z is blue
+             */
+
+            using (BasicEffect basicEffect = new BasicEffect(graphicsDevice))
+            {
+                var lines = new VertexPositionColor[6];
+                lines[0] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Red);
+                lines[1] = new VertexPositionColor(new Vector3(10, 0, 0), Color.Red);
+                lines[2] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Green);
+                lines[3] = new VertexPositionColor(new Vector3(0, 10, 0), Color.Green);
+                lines[4] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Blue);
+                lines[5] = new VertexPositionColor(new Vector3(0, 0, 10), Color.Blue);
+
+                basicEffect.World = Matrix.Identity;
+                basicEffect.View = ViewMatrix;
+                basicEffect.Projection = ProjectionMatrix;
+                basicEffect.VertexColorEnabled = true;
+
+                foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines, 0, 3);
+                }
+            }
+#endif
         }
     }
 
