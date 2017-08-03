@@ -50,9 +50,6 @@ namespace Test3D.Objects
         {
             // The assignment of effect.View and effect.Projection
             // are nearly identical to the code in the Model drawing code.
-            var cameraLookAtVector = Vector3.Zero;
-            var cameraUpVector = Vector3.UnitZ;
-
             effect.View = camera.ViewMatrix;
             effect.Projection = camera.ProjectionMatrix;
 
