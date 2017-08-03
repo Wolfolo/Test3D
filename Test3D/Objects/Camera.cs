@@ -10,11 +10,11 @@ namespace Test3D.Objects
         GraphicsDevice graphicsDevice;
         Point center;
 
-        Vector3 position;
-        Vector3 up;
-        Vector3 look;
+        protected Vector3 position;
+        protected Vector3 up;
+        protected Vector3 look;
 
-        MouseState oldMouseState;
+        protected MouseState oldMouseState;
 
         const float unitsPerSecond = 10;
 
@@ -84,50 +84,28 @@ namespace Test3D.Objects
             look = rot.Forward;
         }
 
-        private void Thrust(float amount)
+        protected virtual void Thrust(float amount)
         {
-            look.Normalize();
-            position += look * amount;
         }
 
-        private void StrafeHorizontal(float amount)
+        protected virtual void StrafeHorizontal(float amount)
         {
-            var left = Vector3.Cross(up, look);
-            left.Normalize();
-
-            position += left * amount;
         }
 
-        private void StrafeVertical(float amount)
+        protected virtual void StrafeVertical(float amount)
         {
-            up.Normalize();
-            position += up * amount;
         }
 
-        private void Yaw(float amount)
+        protected virtual void Yaw(float amount)
         {
-            look.Normalize();
-
-            look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(up, amount));
         }
 
-        private void Pitch(float amount)
+        protected virtual void Pitch(float amount)
         {
-            look.Normalize();
-            var left = Vector3.Cross(up, look);
-            left.Normalize();
-
-            look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(left, amount));
-            up = Vector3.Transform(up, Matrix.CreateFromAxisAngle(left, amount));
         }
 
-        private void Roll(float amount)
+        protected virtual void Roll(float amount)
         {
-            up.Normalize();
-            var left = Vector3.Cross(up, look);
-            left.Normalize();
-
-            up = Vector3.Transform(up, Matrix.CreateFromAxisAngle(look, amount));
         }
 
         /// <summary>
@@ -290,12 +268,89 @@ namespace Test3D.Objects
         public FPCamera(GraphicsDevice graphicsDevice) : base(graphicsDevice)
         {
         }
+
+        protected override void Thrust(float amount)
+        {
+            look.Normalize();
+            position += look * amount;
+        }
+
+        protected override void StrafeHorizontal(float amount)
+        {
+            var left = Vector3.Cross(up, look);
+            left.Normalize();
+
+            position += left * amount;
+        }
+
+        protected override void StrafeVertical(float amount)
+        {
+            up.Normalize();
+            position += up * amount;
+        }
+
+        protected override void Yaw(float amount)
+        {
+            look.Normalize();
+
+            look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(up, amount));
+        }
+
+        protected override void Pitch(float amount)
+        {
+            look.Normalize();
+            var left = Vector3.Cross(up, look);
+            left.Normalize();
+
+            look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(left, amount));
+            up = Vector3.Transform(up, Matrix.CreateFromAxisAngle(left, amount));
+        }
+
+        protected override void Roll(float amount)
+        {
+            up.Normalize();
+            var left = Vector3.Cross(up, look);
+            left.Normalize();
+
+            up = Vector3.Transform(up, Matrix.CreateFromAxisAngle(look, amount));
+        }
     }
 
     public class AbsoluteCamera : BaseCamera
     {
         public AbsoluteCamera(GraphicsDevice graphicsDevice) : base(graphicsDevice)
         {
+        }
+
+        protected override void Thrust(float amount)
+        {
+            position += Vector3.Up * amount;
+        }
+
+        protected override void StrafeHorizontal(float amount)
+        {
+            position += Vector3.Left * amount;
+        }
+
+        protected override void StrafeVertical(float amount)
+        {
+            position += Vector3.Forward * amount;
+        }
+
+        protected override void Yaw(float amount)
+        {
+            // TODO : it does not work at all...
+            //look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(Vector3.Up, amount));
+        }
+
+        protected override void Pitch(float amount)
+        {
+            look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(Vector3.Left, amount));
+        }
+
+        protected override void Roll(float amount)
+        {
+            up = Vector3.Transform(up, Matrix.CreateFromAxisAngle(Vector3.Forward, amount));
         }
     }
 }

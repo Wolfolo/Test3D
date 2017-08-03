@@ -41,7 +41,7 @@ namespace Test3D
             tank_dual.Initialize(Content.Load<Model>("Models/Tank_Dual"));
             tank_dual.Move(Matrix.CreateTranslation(new Vector3(-10, 0, 0)), Matrix.Identity);
 
-            camera = new FPCamera(GraphicsDevice);
+            camera = new AbsoluteCamera(GraphicsDevice);
             camera.SetPosition(new Vector3(0, -20, 10));
             camera.SetRotation(Matrix.CreateFromYawPitchRoll(0, 1, 0));
         }
