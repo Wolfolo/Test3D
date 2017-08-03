@@ -1,25 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test3D.Objects
 {
     public class Tank
     {
         Model model;
+        Matrix positionMatrix;
+        Matrix rotationMatrix;
 
-        float angle;
-        Vector3 position;
-
-        public void Initialize(ContentManager contentManager, string modelName, Vector3 startPos)
+        public void Initialize(Model model)
         {
-            model = contentManager.Load<Model>(modelName);
-            position = startPos;
+            this.model = model;
         }
 
         public void Draw(Camera camera)
@@ -42,24 +34,27 @@ namespace Test3D.Objects
             }
         }
 
+        public void Move(Matrix position, Matrix rotation)
+        {
+            // this matrix moves the model "out" from the origin
+            positionMatrix = position;
+
+            // this matrix rotates everything around the origin
+            rotationMatrix = rotation;
+        }
+
         public void Update(GameTime gameTime)
         {
             // TotalSeconds is a double so we need to cast to float
-            angle += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            rotationMatrix *= Matrix.CreateRotationZ((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            Move(positionMatrix, rotationMatrix);
         }
 
-        Matrix GetWorldMatrix()
+        private Matrix GetWorldMatrix()
         {
-            // this matrix moves the model "out" from the origin
-            Matrix positionMatrix = Matrix.CreateTranslation(position);
-
-            // this matrix rotates everything around the origin
-            Matrix rotationMatrix = Matrix.CreateRotationZ(angle);
-
             // We combine the two to have the model move in a circle:
-            Matrix combined = rotationMatrix * positionMatrix;
-
-            return combined;
+            return rotationMatrix * positionMatrix;
         }
     }
 }

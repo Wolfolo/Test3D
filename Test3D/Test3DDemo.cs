@@ -30,13 +30,16 @@ namespace Test3D
             floor.Initialize(Content, "Textures/checkerboard");
 
             tank_light = new Tank();
-            tank_light.Initialize(Content, "Models/Tank_Light", new Vector3(10, 0, 0));
+            tank_light.Initialize(Content.Load<Model>("Models/Tank_Light"));
+            tank_light.Move(Matrix.CreateTranslation(new Vector3(10, 0, 0)), Matrix.Identity);
 
             tank_medium = new Tank();
-            tank_medium.Initialize(Content, "Models/Tank_Medium", new Vector3(0, 0, 0));
+            tank_medium.Initialize(Content.Load<Model>("Models/Tank_Medium"));
+            tank_medium.Move(Matrix.CreateTranslation(new Vector3(0, 0, 0)), Matrix.Identity);
 
             tank_dual = new Tank();
-            tank_dual.Initialize(Content, "Models/Tank_Dual", new Vector3(-10, 0, 0));
+            tank_dual.Initialize(Content.Load<Model>("Models/Tank_Dual"));
+            tank_dual.Move(Matrix.CreateTranslation(new Vector3(-10, 0, 0)), Matrix.Identity);
 
             camera = new Camera(GraphicsDevice);
             camera.SetPosition(new Vector3(0, -20, 10));
@@ -67,7 +70,6 @@ namespace Test3D
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            float aspectRatio = graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
             floor.Draw(camera);
 
             tank_light.Draw(camera);
