@@ -27,7 +27,7 @@ namespace Test3D
             base.Initialize();
 
             floor = new Floor(GraphicsDevice);
-            floor.Initialize(Content, "Textures/checkerboard");
+            floor.Initialize(Content, "Textures/checkerboard", new Vector2(20));
 
             tank_light = new Tank();
             tank_light.Initialize(Content.Load<Model>("Models/Tank_Light"));

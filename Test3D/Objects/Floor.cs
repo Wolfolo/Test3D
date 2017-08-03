@@ -21,28 +21,26 @@ namespace Test3D.Objects
             graphicsDevice = device;
         }
 
-        public void Initialize(ContentManager contentManager, string textureName)
+        public void Initialize(ContentManager contentManager, string textureName, Vector2 size)
         {
             effect = new BasicEffect(graphicsDevice);
 
             floorVerts = new VertexPositionTexture[6];
 
-            floorVerts[0].Position = new Vector3(-20, -20, 0);
-            floorVerts[1].Position = new Vector3(-20, 20, 0);
-            floorVerts[2].Position = new Vector3(20, -20, 0);
+            floorVerts[0].Position = new Vector3(-size.X, -size.Y, 0);
+            floorVerts[1].Position = new Vector3(-size.X, size.Y, 0);
+            floorVerts[2].Position = new Vector3(size.X, -size.Y, 0);
 
             floorVerts[3].Position = floorVerts[1].Position;
-            floorVerts[4].Position = new Vector3(20, 20, 0);
+            floorVerts[4].Position = new Vector3(size.X, size.Y, 0);
             floorVerts[5].Position = floorVerts[2].Position;
 
-            int repetitions = 20;
-
             floorVerts[0].TextureCoordinate = new Vector2(0, 0);
-            floorVerts[1].TextureCoordinate = new Vector2(0, repetitions);
-            floorVerts[2].TextureCoordinate = new Vector2(repetitions, 0);
+            floorVerts[1].TextureCoordinate = new Vector2(0, size.Y);
+            floorVerts[2].TextureCoordinate = new Vector2(size.X, 0);
 
             floorVerts[3].TextureCoordinate = floorVerts[1].TextureCoordinate;
-            floorVerts[4].TextureCoordinate = new Vector2(repetitions, repetitions);
+            floorVerts[4].TextureCoordinate = new Vector2(size.X, size.Y);
             floorVerts[5].TextureCoordinate = floorVerts[2].TextureCoordinate;
 
             texture = contentManager.Load<Texture2D>(textureName);
