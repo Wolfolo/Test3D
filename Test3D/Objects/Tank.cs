@@ -14,7 +14,7 @@ namespace Test3D.Objects
             this.model = model;
         }
 
-        public void Draw(Camera camera)
+        public void Draw(BaseCamera camera)
         {
             foreach (var mesh in model.Meshes)
             {

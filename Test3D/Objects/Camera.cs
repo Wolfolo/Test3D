@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Test3D.Objects
 {
-    public class Camera
+    public abstract class BaseCamera
     {
         // We need this to calculate the aspectRatio in the ProjectionMatrix property.
         GraphicsDevice graphicsDevice;
@@ -66,7 +66,7 @@ namespace Test3D.Objects
             }
         }
 
-        public Camera(GraphicsDevice graphicsDevice)
+        public BaseCamera(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
 
@@ -282,6 +282,20 @@ namespace Test3D.Objects
             {
                 Move(CameraMovements.StrafeDown, unit);
             }
+        }
+    }
+
+    public class FPCamera : BaseCamera
+    {
+        public FPCamera(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+    }
+
+    public class AbsoluteCamera : BaseCamera
+    {
+        public AbsoluteCamera(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
         }
     }
 }

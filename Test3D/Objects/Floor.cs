@@ -46,7 +46,7 @@ namespace Test3D.Objects
             texture = contentManager.Load<Texture2D>(textureName);
         }
 
-        public void Draw(Camera camera)
+        public void Draw(BaseCamera camera)
         {
             // The assignment of effect.View and effect.Projection
             // are nearly identical to the code in the Model drawing code.
