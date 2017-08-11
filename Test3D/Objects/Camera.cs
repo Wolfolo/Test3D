@@ -389,18 +389,17 @@ namespace Test3D.Objects
 
         protected override void Yaw(float amount)
         {
-            // TODO : it does not work at all...
-            //look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(Vector3.Up, amount));
+            look = Vector3.Transform(look, Matrix.CreateFromYawPitchRoll(amount, 0, amount));
         }
 
         protected override void Pitch(float amount)
         {
-            look = Vector3.Transform(look, Matrix.CreateFromAxisAngle(Vector3.Left, amount));
+            look = Vector3.Transform(look, Matrix.CreateFromYawPitchRoll(0, amount, 0));
         }
 
         protected override void Roll(float amount)
         {
-            up = Vector3.Transform(up, Matrix.CreateFromAxisAngle(Vector3.Forward, amount));
+            up = Vector3.Transform(up, Matrix.CreateFromYawPitchRoll(0, 0, amount));
         }
     }
 }
