@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using Test3D.Tools;
 
 namespace Test3D.Objects
 {
@@ -16,10 +18,13 @@ namespace Test3D.Objects
 
         protected MouseState oldMouseState;
 
+        protected ControlHandler lookController;
+        protected ControlHandler movementController;
+
         const float unitsPerSecond = 10;
 
         int sensitivity = 5;
-        bool invertMouse = true;
+        bool invert = true;
 
         public enum CameraRotations
         {
@@ -66,11 +71,80 @@ namespace Test3D.Objects
             }
         }
 
-        public BaseCamera(GraphicsDevice graphicsDevice)
+        public BaseCamera(GraphicsDevice graphicsDevice, ControlHandler lookController, ControlHandler movementController)
         {
             this.graphicsDevice = graphicsDevice;
+            this.lookController = lookController;
+            this.movementController = movementController;
+
+            BindControls();
 
             center = new Point(graphicsDevice.Viewport.Width / 2, graphicsDevice.Viewport.Height / 2);
+        }
+
+        protected void BindControls()
+        {
+            lookController.UpPressed += delegate (object sender, EventArgs ea)
+            {
+                Rotate(invert ? CameraRotations.PitchDown : CameraRotations.PitchUp, (float)sensitivity / 200);
+            };
+
+            lookController.DownPressed += delegate (object sender, EventArgs ea)
+            {
+                Rotate(invert ? CameraRotations.PitchUp : CameraRotations.PitchDown, (float)sensitivity / 200);
+            };
+
+            lookController.LeftPressed += delegate (object sender, EventArgs ea)
+            {
+                Rotate(CameraRotations.YawLeft, (float)sensitivity / 200);
+            };
+
+            lookController.RightPressed += delegate (object sender, EventArgs ea)
+            {
+                Rotate(CameraRotations.YawRight, (float)sensitivity / 200);
+            };
+
+            lookController.RotateCWPressed += delegate (object sender, EventArgs ea)
+            {
+                Rotate(CameraRotations.RollClockwise, (float)sensitivity / 200);
+            };
+
+            lookController.RotateCCWPressed += delegate (object sender, EventArgs ea)
+            {
+                Rotate(CameraRotations.RollAntiClockwise, (float)sensitivity / 200);
+            };
+
+            var unit = .01f;
+
+            movementController.LeftPressed += delegate (object sender, EventArgs ea)
+            {
+                Move(CameraMovements.StrafeLeft, unit);
+            };
+
+            movementController.RightPressed += delegate (object sender, EventArgs ea)
+            {
+                Move(CameraMovements.StrafeRight, unit);
+            };
+
+            movementController.UpPressed += delegate (object sender, EventArgs ea)
+            {
+                Move(CameraMovements.ThrustForward, unit);
+            };
+
+            movementController.DownPressed += delegate (object sender, EventArgs ea)
+            {
+                Move(CameraMovements.ThrustBackward, unit);
+            };
+
+            movementController.StrafeUpPressed += delegate (object sender, EventArgs ea)
+            {
+                Move(CameraMovements.StrafeUp, unit);
+            };
+
+            movementController.StrafeDownPressed += delegate (object sender, EventArgs ea)
+            {
+                Move(CameraMovements.StrafeDown, unit);
+            };
         }
 
         public void SetPosition(Vector3 pos)
@@ -176,40 +250,8 @@ namespace Test3D.Objects
 
         public void Update(GameTime gameTime)
         {
-            float unit = .01f;
-
-            // Mouse look
-            if (Mouse.GetState().RightButton == ButtonState.Released)
-            {
-                if (Mouse.GetState().Position.X > center.X)
-                {
-                    Rotate(invertMouse ? CameraRotations.YawLeft : CameraRotations.YawRight, (float)sensitivity / 200);
-                }
-                else if (Mouse.GetState().Position.X < center.X)
-                {
-                    Rotate(invertMouse ? CameraRotations.YawRight : CameraRotations.YawLeft, (float)sensitivity / 200);
-                }
-
-                if (Mouse.GetState().Position.Y > center.Y)
-                {
-                    Rotate(invertMouse ? CameraRotations.PitchDown : CameraRotations.PitchUp, (float)sensitivity / 200);
-                }
-                else if (Mouse.GetState().Position.Y < center.Y)
-                {
-                    Rotate(invertMouse ? CameraRotations.PitchUp : CameraRotations.PitchDown, (float)sensitivity / 200);
-                }
-            }
-            else
-            {
-                if (Mouse.GetState().Position.X > center.X)
-                {
-                    Rotate(invertMouse ? CameraRotations.RollAntiClockwise : CameraRotations.RollClockwise, (float)sensitivity / 200);
-                }
-                else if (Mouse.GetState().Position.X < center.X)
-                {
-                    Rotate(invertMouse ? CameraRotations.RollClockwise : CameraRotations.RollAntiClockwise, (float)sensitivity / 200);
-                }
-            }
+            lookController.Update();
+            movementController.Update();
 
             // Keep the mouse in the center or the camera will move continuously
             Mouse.SetPosition(center.X, center.Y);
@@ -217,10 +259,10 @@ namespace Test3D.Objects
             // Invert the movement direction?
             if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
             {
-                invertMouse = !invertMouse;
+                invert = !invert;
             }
 
-            // Sensitivitsy
+            // Sensitivity
             if (Mouse.GetState().ScrollWheelValue < oldMouseState.ScrollWheelValue)
             {
                 sensitivity += sensitivity > 1 ? -1 : 0;
@@ -232,34 +274,6 @@ namespace Test3D.Objects
 
             // Update the mouse state
             oldMouseState = Mouse.GetState();
-
-            // Movement
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                Move(CameraMovements.StrafeLeft, unit);
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                Move(CameraMovements.StrafeRight, unit);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
-                Move(CameraMovements.ThrustForward, unit);
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                Move(CameraMovements.ThrustBackward, unit);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.PageUp))
-            {
-                Move(CameraMovements.StrafeUp, unit);
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.PageDown))
-            {
-                Move(CameraMovements.StrafeDown, unit);
-            }
         }
 
         public void Draw()
@@ -299,7 +313,8 @@ namespace Test3D.Objects
 
     public class FPCamera : BaseCamera
     {
-        public FPCamera(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        public FPCamera(GraphicsDevice graphicsDevice, ControlHandler lookController, ControlHandler movementController)
+            : base(graphicsDevice, lookController, movementController)
         {
         }
 
@@ -352,7 +367,8 @@ namespace Test3D.Objects
 
     public class AbsoluteCamera : BaseCamera
     {
-        public AbsoluteCamera(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        public AbsoluteCamera(GraphicsDevice graphicsDevice, ControlHandler lookController, ControlHandler movementController)
+            : base(graphicsDevice, lookController, movementController)
         {
         }
 

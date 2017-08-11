@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Test3D.Objects;
+using Test3D.Tools;
 
 namespace Test3D
 {
@@ -15,6 +16,8 @@ namespace Test3D
         Tank tank_medium;
         Tank tank_dual;
         BaseCamera camera;
+        ControlHandler lookController;
+        ControlHandler movementController;
 
         public Test3DDemo()
         {
@@ -41,7 +44,12 @@ namespace Test3D
             tank_dual.Initialize(Content.Load<Model>("Models/Tank_Dual"));
             tank_dual.Move(Matrix.CreateTranslation(new Vector3(-10, 0, 0)), Matrix.Identity);
 
-            camera = new AbsoluteCamera(GraphicsDevice);
+
+            var center = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+            lookController = ControlHandler.GetLookController(center);
+            movementController = ControlHandler.GetMovementController(center);
+
+            camera = new AbsoluteCamera(GraphicsDevice, lookController, movementController);
             camera.SetPosition(new Vector3(0, -20, 10));
             camera.SetRotation(Matrix.CreateFromYawPitchRoll(0, 1, 0));
         }
